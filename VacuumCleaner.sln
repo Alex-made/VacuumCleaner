@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VacuumCleaner", "VacuumCleaner\VacuumCleaner.csproj", "{BDC63B4D-D4F1-4D9E-8600-40268DE7622A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BDC63B4D-D4F1-4D9E-8600-40268DE7622A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDC63B4D-D4F1-4D9E-8600-40268DE7622A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDC63B4D-D4F1-4D9E-8600-40268DE7622A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDC63B4D-D4F1-4D9E-8600-40268DE7622A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
