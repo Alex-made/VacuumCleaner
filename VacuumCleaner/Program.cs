@@ -22,34 +22,45 @@ room.SetBarrier(5, 1);
 room.SetBarrier(6, 1);
 room.SetBarrier(7, 1);
 room.SetBarrier(7, 0);
-//room.CleanArea(1,0, 2, 1); 
 
+//запускаем пылесос в отдельном потоке
 var cleaner = new RandomRidingCleaner(2, 3, room);
-cleaner.Clean();
+//var cleaner = new ClockArrowDirectionCleaner(2, 3, room);
+var task = Task.Factory.StartNew(() => cleaner.Clean());
 
-//Отобразить поле в процессе работы
-// while (!cleaner.HasFinished())
-// {
-// 	for(var i=0; i<room.Length; i++)
-// 	{
-// 		for (int j = 0; j < room.Width; j++)
-// 		{
-// 			Console.Write(room.Space[i, j].ToString() + ' ');
-// 		}
-// 		Console.WriteLine();
-// 	}
-// 	Console.WriteLine();
-// 	Thread.Sleep(500);  //TODO тормозит все выполнение, но пока для примера пойдет. сделать выполнение пылесоса в отдельном потоке.
-// }
 
-for(var i=0; i<room.Length; i++)
+
+//Отобразить поле в процессе работы. Время обновления одинаково с временем задержки пылесоса.
+while (!cleaner.HasFinished())
 {
-	for (int j = 0; j < room.Width; j++)
+	for(var i=0; i<room.Length; i++)
 	{
-		Console.Write(room.Space[i, j].ToString() + ' ');
+		for (int j = 0; j < room.Width; j++)
+		{
+			// необходимо для отображения положения пылесоса в данный момент времени. Удобно смотреть перемещение глазами.
+			if (i == cleaner.CurrentX && j == cleaner.CurrentY)
+			{
+				Console.Write("X" + ' ');	
+			}
+			else
+			{
+				Console.Write(room.Space[i, j].ToString() + ' ');
+			}
+		}
+		Console.WriteLine();
 	}
 	Console.WriteLine();
+	Thread.Sleep(200);
 }
+
+// for(var i=0; i<room.Length; i++)
+// {
+// 	for (int j = 0; j < room.Width; j++)
+// 	{
+// 		Console.Write(room.Space[i, j].ToString() + ' ');
+// 	}
+// 	Console.WriteLine();
+// }
 Console.WriteLine($"Очистка завершена. Очищено {room.CalculateCleanPercent()}% комнаты.");
 
 
