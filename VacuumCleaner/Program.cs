@@ -4,12 +4,13 @@ using VacuumCleaner.RandomRidingCleaner;
 
 //Инициализация комнаты для уборки - размер и препятствия.
 //Препятствия - единички на схеме.
+//x/y
 //0 0 0 0 0 0 0
 //0 0 0 0 0 0 0
 //0 0 1 0 1 1 0
 //0 0 0 0 1 1 0
 //0 0 0 0 0 0 0
-//0 1 0 0 0 0 0
+//0 1 0 0 0 0 1
 //0 1 0 0 0 0 0
 //1 1 0 0 0 0 0
 var room = new Room(8, 7);
@@ -19,13 +20,22 @@ room.SetBarrier(3, 5);
 room.SetBarrier(3, 4);
 room.SetBarrier(2, 2);
 room.SetBarrier(5, 1);
+room.SetBarrier(5, 6);
 room.SetBarrier(6, 1);
 room.SetBarrier(7, 1);
 room.SetBarrier(7, 0);
 
+// room.SetBarrier(4, 4);
+// room.SetBarrier(5, 4);
+// room.SetBarrier(5, 3);
+// room.SetBarrier(5, 2);
+// room.SetBarrier(4, 2);
+// room.SetBarrier(3, 2);
+
 //запускаем пылесос в отдельном потоке
-var cleaner = new RandomRidingCleaner(2, 3, room);
+//var cleaner = new RandomRidingCleaner(2, 3, room);
 //var cleaner = new ClockArrowDirectionCleaner(2, 3, room);
+var cleaner = new AlphaRidingCleaner(2, 6, room);
 var task = Task.Factory.StartNew(() => cleaner.Clean());
 
 
@@ -50,7 +60,7 @@ while (!cleaner.HasFinished())
 		Console.WriteLine();
 	}
 	Console.WriteLine();
-	Thread.Sleep(200);
+	Thread.Sleep(400);
 }
 
 // for(var i=0; i<room.Length; i++)

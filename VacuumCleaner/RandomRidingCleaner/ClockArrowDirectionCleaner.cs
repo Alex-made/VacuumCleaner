@@ -63,8 +63,6 @@ public class ClockArrowDirectionCleaner : Cleaner
 			{
 				direction = SelectDirection(direction);
 			}
-
-			Thread.Sleep(200);
 		}
 
 		_hasFinished = true;
@@ -93,6 +91,7 @@ public class ClockArrowDirectionCleaner : Cleaner
 
 	private bool TryMove(Direction direction)
 	{
+		Thread.Sleep(200);
 		//в связи с нумераций массива немного не наглядно представлены стороны движения
 		switch (direction)
 		{

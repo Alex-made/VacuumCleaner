@@ -7,7 +7,7 @@ public class RandomRidingCleaner : Cleaner
 {
 	#region Data
 	#region Consts
-	private const int PossibleIterations = 60;
+	private const int PossibleIterations = 320;
 	#endregion
 
 	#region Fields
@@ -67,8 +67,6 @@ public class RandomRidingCleaner : Cleaner
 			{
 				direction = SelectRandomDirection(direction);
 			}
-
-			Thread.Sleep(200);
 		}
 
 		_hasFinished = true;
@@ -85,24 +83,26 @@ public class RandomRidingCleaner : Cleaner
 	private Direction SelectRandomDirection(Direction currentDirection)
 	{
 		var rand = new Random();
-		var nextDirection = rand.Next(300);
+		var nextDirection = rand.Next(600);
 		if (nextDirection % 3 == (int)currentDirection)
 		{
 			return SelectRandomDirection(currentDirection);
 		}
 
-		return (nextDirection % 3) switch
+		return (nextDirection % 4) switch
 		{
-			0 => Direction.Right,
+			4 => Direction.Right,
 			1 => Direction.Left,
 			2 => Direction.Up,
 			3 => Direction.Down,
+			0 => Direction.Right,
 			_ => throw new InvalidOperationException()
 		};
 	}
 
 	private bool TryMove(Direction direction)
 	{
+		Thread.Sleep(50);
 		switch (direction)
 		{
 			case Direction.Right:
@@ -133,7 +133,7 @@ public class RandomRidingCleaner : Cleaner
 
 				break;
 			case Direction.Down:
-				if (_room.DoesCellExist(CurrentX + 1, CurrentY))
+				if (_room.DoesCellExist(CurrentX, CurrentY + 1))
 				{
 					CurrentY += 1;
 					_room.CleanArea(CurrentX, CurrentY, CurrentX, CurrentY);
