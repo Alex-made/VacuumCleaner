@@ -9,7 +9,7 @@ public class AlphaRidingCleaner : Cleaner
 {
 	#region Data
 	#region Consts
-	private const int PossibleIterations = 60;
+	private const int PossibleIterations = 120;
 	#endregion
 
 	#region Fields
@@ -93,6 +93,9 @@ public class AlphaRidingCleaner : Cleaner
 
 	private void GoRoomAround()
 	{
+		int? lastStartGoingAroundX = null;
+		int? lastStartGoingAroundY = null;
+		
 		for (var i = 0; i <= PossibleIterations; i++)
 		{
 			//пробуем двигаться вперед до препятствия (край комнаты или препятствие)
@@ -102,14 +105,26 @@ public class AlphaRidingCleaner : Cleaner
 				//дошли до препятствия. переходим в функцию объезда препятствия
 				var startGoingAroundX = CurrentX;
 				var startGoingAroundY = CurrentY;
-				GoBarrierAround();
+				//нужно проверить, что начальные координаты объезда препятствия не те же самые, что и в прошлый раз.
+				//иначе - выход
+				if (lastStartGoingAroundX.HasValue && startGoingAroundX == lastStartGoingAroundX.Value 
+					&& lastStartGoingAroundY.HasValue && startGoingAroundY == lastStartGoingAroundY.Value)
+				{
+					return;
+				}
+				//начать обход препятствия
+				GoBarrierAround(startGoingAroundX, startGoingAroundY);
+				lastStartGoingAroundX = startGoingAroundX;
+				lastStartGoingAroundY = startGoingAroundY;
 			}
+			
+			
 		}
 		
 		
 	}
 
-	private void GoBarrierAround()
+	private void GoBarrierAround(int startGoingAroundX, int startGoingAroundY)
 	{
 		//дошли до препятствия. переходим в функцио объезда препятствия
 		//внутри функции:
@@ -118,27 +133,46 @@ public class AlphaRidingCleaner : Cleaner
 		TurnRight();
 		if (!TryMove(_direction))
 		{
-			GoBarrierAround();
+			GoBarrierAround(startGoingAroundX, startGoingAroundY);
 		}
-		//если получилось, попробовали повернуть налево и сделать шаг прямо. 
+		//маршрут закольцован? тогда выйти
+		if (CurrentX == startGoingAroundX && CurrentY == startGoingAroundY)
+		{
+			return;
+		}
+		//если получилось сделать шаг, попробовали повернуть налево и сделать шаг прямо. 
 		//если не получилось, снова объезд препятствия
 		TurnLeft();
 		if (!TryMove(_direction))
 		{
-			GoBarrierAround();
+			GoBarrierAround(startGoingAroundX, startGoingAroundY);
 		}
-		//если получилось, снова шаг вперед. и поворот налево и шаг вперед
+		//маршрут закольцован? тогда выйти
+		if (CurrentX == startGoingAroundX && CurrentY == startGoingAroundY)
+		{
+			return;
+		}
+		//если получилось сделать шаг, снова шаг вперед. и поворот налево и шаг вперед
 		//если не получилось, снова объезд препятствия
 		if (!TryMove(_direction))
 		{
-			GoBarrierAround();
+			GoBarrierAround(startGoingAroundX, startGoingAroundY);
+		}
+		//маршрут закольцован? тогда выйти
+		if (CurrentX == startGoingAroundX && CurrentY == startGoingAroundY)
+		{
+			return;
 		}
 		TurnLeft();
 		if (!TryMove(_direction))
 		{
-			GoBarrierAround();
+			GoBarrierAround(startGoingAroundX, startGoingAroundY);
 		}
-		
+		//маршрут закольцован? тогда выйти
+		if (CurrentX == startGoingAroundX && CurrentY == startGoingAroundY)
+		{
+			return;
+		}
 		
 	}
 
