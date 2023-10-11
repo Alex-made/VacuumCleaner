@@ -27,26 +27,6 @@ public class ClockArrowDirectionCleaner : Cleaner
 	}
 	#endregion
 
-	#region Properties
-	/// <summary>
-	/// Возвращает текущую координату X.
-	/// </summary>
-	public int CurrentX
-	{
-		get;
-		private set;
-	}
-
-	/// <summary>
-	/// Возвращает текущую координату Y.
-	/// </summary>
-	public int CurrentY
-	{
-		get;
-		private set;
-	}
-	#endregion
-
 	#region Overrided
 	public override void Clean()
 	{
@@ -91,7 +71,7 @@ public class ClockArrowDirectionCleaner : Cleaner
 
 	private bool TryMove(Direction direction)
 	{
-		Thread.Sleep(200);
+		Thread.Sleep(SleepMilliseconds);
 		//в связи с нумераций массива немного не наглядно представлены стороны движения
 		switch (direction)
 		{

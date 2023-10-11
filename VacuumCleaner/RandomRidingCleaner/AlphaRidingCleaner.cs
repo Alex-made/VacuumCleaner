@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace VacuumCleaner.RandomRidingCleaner;
 
@@ -9,7 +10,7 @@ public class AlphaRidingCleaner : Cleaner
 {
 	#region Data
 	#region Consts
-	private const int PossibleIterations = 120;
+	private const int PossibleIterations = 420;
 	#endregion
 
 	#region Fields
@@ -32,26 +33,6 @@ public class AlphaRidingCleaner : Cleaner
 		CurrentX = _xInitCoordinate;
 		CurrentY = _yInitCoordinate;
 		_direction = InitialDirection;
-	}
-	#endregion
-
-	#region Properties
-	/// <summary>
-	/// Возвращает текущую координату X.
-	/// </summary>
-	public int CurrentX
-	{
-		get;
-		private set;
-	}
-
-	/// <summary>
-	/// Возвращает текущую координату Y.
-	/// </summary>
-	public int CurrentY
-	{
-		get;
-		private set;
 	}
 	#endregion
 
@@ -85,12 +66,58 @@ public class AlphaRidingCleaner : Cleaner
 		//1 итерация: обход комнаты по периметру
 		GoRoomAround();
 		//2 итерация: проходим змейкой внутри комнаты и сохраняем непройденные участки в стек
-		
+		//GoSnake();
 		//3 итерация: чистим места из стека
 		
 		_hasFinished = true;
 	}
+	
+	/// <summary>
+	/// Выполняет движение змейкой по комнате.
+	/// </summary>
+	private void GoSnake()
+	{
+		var previousTurnRight = false;
+		
+		for (var i = 0; i <= PossibleIterations; i++)
+		{
+			//пробуем двигаться вперед до препятствия (край комнаты или препятствие)
+			//дошли до препятствия. переезжаем на соседнюю дорожку и разворачиваемся
+			if (!TryMove(_direction))
+			{
+				if (!previousTurnRight)
+				{
+					TurnRight();
+					if (!TryMove(_direction))
+					{
+						TurnRight();
+						previousTurnRight = true;
+						continue;
+					}
 
+					TurnRight();
+					previousTurnRight = true;
+				}
+				else
+				{
+					TurnLeft();
+					if (!TryMove(_direction))
+					{
+						TurnLeft();
+						previousTurnRight = false;
+						continue;
+					}
+
+					TurnLeft();
+					previousTurnRight = false;
+				}
+			}
+		}
+	}
+
+	/// <summary>
+	/// Выполняет объезд комнаты по периметру.
+	/// </summary>
 	private void GoRoomAround()
 	{
 		int? lastStartGoingAroundX = null;
@@ -117,13 +144,15 @@ public class AlphaRidingCleaner : Cleaner
 				lastStartGoingAroundX = startGoingAroundX;
 				lastStartGoingAroundY = startGoingAroundY;
 			}
-			
-			
 		}
-		
-		
 	}
 
+	/// <summary>
+	/// Выполняет объезд препятствия.
+	/// </summary>
+	/// <param name="startGoingAroundX">Координата X начала обхода препятствия.</param>
+	/// <param name="startGoingAroundY">Координата Y начала обхода препятствия.</param>
+	/// <remarks>Метод продолжает объезжать препятсиве по кругу, пока не закольцет маршрут и не выйдет из цикла.</remarks>
 	private void GoBarrierAround(int startGoingAroundX, int startGoingAroundY)
 	{
 		//дошли до препятствия. переходим в функцио объезда препятствия
@@ -200,6 +229,21 @@ public class AlphaRidingCleaner : Cleaner
 	}
 	
 	/// <summary>
+	/// Разворачивает пылесос.
+	/// </summary>
+	private void Reverse()
+	{
+		_direction = _direction switch
+		{
+			Direction.Right => Direction.Left,
+			Direction.Down => Direction.Up,
+			Direction.Left => Direction.Right,
+			Direction.Up => Direction.Down,
+			_ => _direction
+		};
+	}
+	
+	/// <summary>
 	/// Поворачивает пылесос налево.
 	/// </summary>
 	private void TurnLeft()
@@ -235,7 +279,7 @@ public class AlphaRidingCleaner : Cleaner
 
 	private bool TryMove(Direction direction)
 	{
-		Thread.Sleep(400);
+		Thread.Sleep(SleepMilliseconds);
 		switch (direction)
 		{
 			case Direction.Down:

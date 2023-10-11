@@ -14,11 +14,37 @@ public abstract class Cleaner : ICleaner
 	#endregion
 	#endregion
 
+	/// <summary>
+	/// Представляет вермя задержки на каждом шаге.
+	/// </summary>
+	/// <remarks>Имитирует время, затрачиваемое на передвижение настящим роботом-пылесосом.</remarks>
+	public static int SleepMilliseconds = 200;
+
 	#region Overridable
 	/// <inheritdoc />
 	public abstract void Clean();
 
 	/// <inheritdoc />
 	public abstract bool HasFinished();
+	#endregion
+	
+	#region Properties
+	/// <summary>
+	/// Возвращает текущую координату X.
+	/// </summary>
+	public int CurrentX
+	{
+		get;
+		protected set;
+	}
+
+	/// <summary>
+	/// Возвращает текущую координату Y.
+	/// </summary>
+	public int CurrentY
+	{
+		get;
+		protected set;
+	}
 	#endregion
 }

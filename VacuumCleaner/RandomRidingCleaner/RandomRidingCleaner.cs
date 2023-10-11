@@ -7,7 +7,7 @@ public class RandomRidingCleaner : Cleaner
 {
 	#region Data
 	#region Consts
-	private const int PossibleIterations = 320;
+	private const int PossibleIterations = 120;
 	#endregion
 
 	#region Fields
@@ -28,26 +28,6 @@ public class RandomRidingCleaner : Cleaner
 		_hasFinished = false;
 		CurrentX = _xInitCoordinate;
 		CurrentY = _yInitCoordinate;
-	}
-	#endregion
-
-	#region Properties
-	/// <summary>
-	/// Возвращает текущую координату X.
-	/// </summary>
-	public int CurrentX
-	{
-		get;
-		private set;
-	}
-
-	/// <summary>
-	/// Возвращает текущую координату Y.
-	/// </summary>
-	public int CurrentY
-	{
-		get;
-		private set;
 	}
 	#endregion
 
@@ -102,7 +82,7 @@ public class RandomRidingCleaner : Cleaner
 
 	private bool TryMove(Direction direction)
 	{
-		Thread.Sleep(50);
+		Thread.Sleep(SleepMilliseconds);
 		switch (direction)
 		{
 			case Direction.Right:
