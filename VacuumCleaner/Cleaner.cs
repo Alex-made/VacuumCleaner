@@ -30,8 +30,9 @@ public abstract class Cleaner : ICleaner
 	
 	#region Properties
 	/// <summary>
-	/// Возвращает текущую координату X.
+	/// Возвращает текущую абсолютную координату X.
 	/// </summary>
+	/// <remarks>Необходимо для отображения пылесоса на поле.</remarks>
 	public int CurrentX
 	{
 		get;
@@ -39,8 +40,9 @@ public abstract class Cleaner : ICleaner
 	}
 
 	/// <summary>
-	/// Возвращает текущую координату Y.
+	/// Возвращает текущую абсолютную координату Y.
 	/// </summary>
+	/// <remarks>Необходимо для отображения пылесоса на поле.</remarks>
 	public int CurrentY
 	{
 		get;

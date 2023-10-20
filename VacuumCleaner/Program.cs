@@ -45,8 +45,9 @@ for (var i = 0; i < cleanerTypes.Count(); i++)
 	typeNumbers.Add(i, cleanerTypes[i]);
 }
 
-var cleanerNumber = int.Parse(Console.ReadLine());
-var cleaner = CreateCleaner(typeNumbers[cleanerNumber]);
+//var cleanerNumber = int.Parse(Console.ReadLine());
+//var cleaner = CreateCleaner(typeNumbers[cleanerNumber]);
+var cleaner = new AlphaRidingCleaner(7, 6, room);
 
 //запускаем пылесос в отдельном потоке
 var task = Task.Factory.StartNew(() => cleaner.Clean());

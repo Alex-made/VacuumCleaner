@@ -18,7 +18,7 @@ public class AlphaRidingCleaner : Cleaner
 	private readonly IRoom _room;
 	private readonly int _xInitCoordinate;
 	private readonly int _yInitCoordinate;
-	private readonly Direction InitialDirection = Direction.Left;
+	private readonly Direction InitialDirection = Direction.Down;
 	private Direction _direction;
 	#endregion
 	#endregion
@@ -64,9 +64,9 @@ public class AlphaRidingCleaner : Cleaner
 		
 		
 		//1 итерация: обход комнаты по периметру
-		GoRoomAround();
+		//GoRoomAround();
 		//2 итерация: проходим змейкой внутри комнаты и сохраняем непройденные участки в стек
-		//GoSnake();
+		GoSnake();
 		//3 итерация: чистим места из стека
 		
 		_hasFinished = true;
@@ -75,9 +75,25 @@ public class AlphaRidingCleaner : Cleaner
 	/// <summary>
 	/// Выполняет движение змейкой по комнате.
 	/// </summary>
+	/// <remarks>Берет координаты финиша по диагонали. Рассчитывает положение по абсолютным координатам. TODO переделать на относительные</remarks>
 	private void GoSnake()
 	{
+		//получить координаты по диагонали (координаты для финиша)
+		var (diagX, diagY) = (0, 0);//GetFinishCoords(); init: 0, 6
+		//нужно повернуть в сторону координат окончания
+		//если X идет на уменьшение, direction = left. иначе - right
+		if (CurrentX > diagX)
+		{
+			_direction = Direction.Left;
+		}
+		else
+		{
+			_direction = Direction.Right;
+		}
+		
 		var previousTurnRight = false;
+		var previousCurrentX = CurrentX;
+		var wanderingTries = 3; //Кол-во попыток проехаться туда-сюда, если заблудился, прежде, чем выйти из алгоритма.
 		
 		for (var i = 0; i <= PossibleIterations; i++)
 		{
@@ -85,6 +101,20 @@ public class AlphaRidingCleaner : Cleaner
 			//дошли до препятствия. переезжаем на соседнюю дорожку и разворачиваемся
 			if (!TryMove(_direction))
 			{
+				//если X не стал ближе к концу (т.е. пылесос не продвинулся дальше), то кол-во попыток блуждания уменьшаем
+				//когда кол-во попыток вышло, заканчиваем
+				//это означает, что алгоритм обхода звейкой либо подошел к концу, либо локально заблудился и нужно заканчивать алгоритм
+				if (!(Math.Abs(CurrentX - diagX) < Math.Abs(previousCurrentX - diagX)))
+				{
+					wanderingTries--;
+				}
+
+				if (wanderingTries <= 0)
+				{
+					break;
+				}
+				previousCurrentX = CurrentX;
+				
 				if (!previousTurnRight)
 				{
 					TurnRight();
@@ -111,7 +141,13 @@ public class AlphaRidingCleaner : Cleaner
 					TurnLeft();
 					previousTurnRight = false;
 				}
+				
 			}
+		}
+		
+		(int, int) GetFinishCoords()
+		{
+			return (0,0);
 		}
 	}
 
@@ -126,14 +162,15 @@ public class AlphaRidingCleaner : Cleaner
 		for (var i = 0; i <= PossibleIterations; i++)
 		{
 			//пробуем двигаться вперед до препятствия (край комнаты или препятствие)
-			//дошли до препятствия. переходим в функцио объезда препятствия
+			//дошли до препятствия. переходим в функцию объезда препятствия
 			if (!TryMove(_direction))
 			{
-				//дошли до препятствия. переходим в функцию объезда препятствия
+				//дошли до препятствия. устанавливаем координаты, в которых начался обход препятствия. переходим в функцию объезда препятствия
 				var startGoingAroundX = CurrentX;
 				var startGoingAroundY = CurrentY;
 				//нужно проверить, что начальные координаты объезда препятствия не те же самые, что и в прошлый раз.
-				//иначе - выход
+				//иначе - выход из условия и пробуем двигаться дальше.
+				//сделано для исключения вращения вокруг препятствия.
 				if (lastStartGoingAroundX.HasValue && startGoingAroundX == lastStartGoingAroundX.Value 
 					&& lastStartGoingAroundY.HasValue && startGoingAroundY == lastStartGoingAroundY.Value)
 				{
@@ -328,6 +365,17 @@ public class AlphaRidingCleaner : Cleaner
 }
 
 
-//тест кейсы для проверки алгоритма обхода комнаты:
+//тест кейсы для проверки алгоритма обхода комнаты по периметру:
 //1. Начать движение из угла комнаты. Должен идти по периметру и обходить все препятствия. Заезжать в углы и тупики и выходить из них
-//2. Мы начали движение с центра комнаты. Пылесос встречает препятсиве посередине и начинает вращаться только вокруг него не выходя из цикла. Этого нужно избегать
+//2. Мы начали движение с центра комнаты. Пылесос встречает препятствие посередине и начинает вращаться только вокруг него не выходя из цикла. Этого нужно избегать
+//3. Алгоритм должен заканчиваться
+
+//тест кейсы для проверки алгоритма обхода комнаты змейкой:
+//1. Начать движение из угла комнаты.
+//Нужен метод переезда в угол комнаты до начала движения по змейке.
+//Нужно выбрать direction такое, чтобы пылесос был повернут в сторону конца комнаты по диагонали (т.е. этот конец справа или слева от пылесоса)
+//Пылесос должен идти вперед, при встрече препятствия поворачивать направо
+// и еще раз направо, т.е. разворачиваться со смещением вниз. Следующий поворот уже налево. Препятствие не объезжаем.
+//2. Мы начали движение с центра комнаты. Пылесос встречает препятсиве и также едет обратно со смещением вниз.
+//3. Алгоритм должен заканчиваться. Условие окончания - находимся наиболее близко к противоположному концу комнаты по диагонали.
+//4. Проверить начало движения из разных углов комнаты
